@@ -1,25 +1,80 @@
-todo_list = []
+import sys
+import json
+import os
 
-while True:
-    user_input = input("Add/Remove/List/Quit: ").lower()
+TASK_FILE = "tasks.json"
 
-    if user_input == "add":
-        task = input("Enter task: ")
-        todo_list.append(task)
-        print("Task added.")
-    elif user_input == "remove":
-        task = input("Enter task to remove: ")
-        if task in todo_list:
-            todo_list.remove(task)
-            print("Task removed.")
-        else:
-            print("Task not found.")
-    elif user_input == "list":
-        print("Your To-Do List:")
-        for task in todo_list:
-            print(f"- {task}")
-    elif user_input == "quit":
-        print("Exiting. Bye!")
-        break
+# Load tasks from file
+def load_tasks():
+    if os.path.exists(TASK_FILE):
+        with open(TASK_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+# Save tasks to file
+def save_tasks(tasks):
+    with open(TASK_FILE, "w") as f:
+        json.dump(tasks, f, indent=2)
+
+# Add a new task
+def add_task(task_desc):
+    tasks = load_tasks()
+    tasks.append({"task": task_desc, "done": False})
+    save_tasks(tasks)
+    print(f'Task added: {task_desc}')
+
+# List all tasks
+def list_tasks():
+    tasks = load_tasks()
+    if not tasks:
+        print("No tasks found.")
+    for i, task in enumerate(tasks, 1):
+        status = "✔️" if task["done"] else "❌"
+        print(f"{i}. [{status}] {task['task']}")
+
+# Mark a task as done
+def mark_done(index):
+    tasks = load_tasks()
+    try:
+        tasks[index - 1]["done"] = True
+        save_tasks(tasks)
+        print(f'Task marked as done: {tasks[index - 1]["task"]}')
+    except IndexError:
+        print("Invalid task number.")
+
+# Delete a task
+def delete_task(index):
+    tasks = load_tasks()
+    try:
+        removed = tasks.pop(index - 1)
+        save_tasks(tasks)
+        print(f'Task deleted: {removed["task"]}')
+    except IndexError:
+        print("Invalid task number.")
+
+# Command line interface
+def main():
+    if len(sys.argv) < 2:
+        print("Usage:")
+        print("  python todo.py add \"Task description\"")
+        print("  python todo.py list")
+        print("  python todo.py done <task_number>")
+        print("  python todo.py delete <task_number>")
+        return
+
+    command = sys.argv[1]
+
+    if command == "add":
+        task_desc = " ".join(sys.argv[2:])
+        add_task(task_desc)
+    elif command == "list":
+        list_tasks()
+    elif command == "done":
+        mark_done(int(sys.argv[2]))
+    elif command == "delete":
+        delete_task(int(sys.argv[2]))
     else:
-        print("Invalid option. Try again.")
+        print("Unknown command.")
+
+if __name__ == "__main__":
+    main()
