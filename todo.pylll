@@ -50,7 +50,7 @@ def delete_task(index):
         save_tasks(tasks)
         print(f'Task deleted: {removed["task"]}')
     except IndexError:
-        print("Invalid task number.")
+        print("Invalid task number.") see
 
 # Command line interface
 def main():
