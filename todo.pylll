@@ -1,0 +1,25 @@
+todo_list = []
+
+while True:
+    user_input = input("Add/Remove/List/Quit: ").lower()
+
+    if user_input == "add":
+        task = input("Enter task: ")
+        todo_list.append(task)
+        print("Task added.")
+    elif user_input == "remove":
+        task = input("Enter task to remove: ")
+        if task in todo_list:
+            todo_list.remove(task)
+            print("Task removed.")
+        else:
+            print("Task not found.")
+    elif user_input == "list":
+        print("Your To-Do List:")
+        for task in todo_list:
+            print(f"- {task}")
+    elif user_input == "quit":
+        print("Exiting. Bye!")
+        break
+    else:
+        print("Invalid option. Try again.")
